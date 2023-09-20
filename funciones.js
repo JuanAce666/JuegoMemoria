@@ -68,68 +68,64 @@ let tiempoTrancurrido;
 let soundLoser = new Audio("sonido/loser.mp3");
 
 //desorganizar imagenes
-imagenes.sort(()=> Math.random() - 0.5 );
+imagenes.sort(() => Math.random() - 0.5);
 
 //iniciar juego
-btnIniciar.addEventListener("click",function () {
-    if (juegoActivo == false && nivel == 1) {
+btnIniciar.addEventListener("click", function () {
+    const nombreJugador = d.getElementById("nombreJugador").value;
+    if (juegoActivo == false && nivel == 1 && nombreJugador.trim() !== "") {
         juegoActivo = true;
         agregarImagenes();
         tiempoDeJuego();
-    }else if (juegoActivo == false && nivel == 2){
+    } else if (juegoActivo == false && nivel == 2 && nombreJugador.trim() !== "") {
         juegoActivo = true;
         agregarImagenes();
         tiempoDeJuego();
-    }else if(juegoActivo == false && nivel == 3){
+    } else if (juegoActivo == false && nivel == 3 && nombreJugador.trim() !== "") {
         juegoActivo = true;
         agregarImagenes();
-        tiempo();
+        tiempoDeJuego();
+    } else {
+        alert("Ingresa un nombre de jugador válido.");
     }
-} );
+});
 
 //tiempo del juego
-function tiempoDeJuego( ) {
-    tiempoTrancurrido = setInterval(function(){
+function tiempoDeJuego() {
+    tiempoTrancurrido = setInterval(function () {
         tiempo--;
         mostrarNiveles.textContent = nivel;
         mostrarTiempo.textContent = tiempo;
-        if(tiempo == 10){
+        if (tiempo == 10) {
             //clearInterval(tiempoTrancurrido);
-            mostrarTiempo.setAttribute("style", 
-            "color:red; font-size:20px");
-        }else if(tiempo == 0){
-            
+            mostrarTiempo.setAttribute(
+                "style",
+                "color:red; font-size:20px"
+            );
+        } else if (tiempo == 0) {
             clearInterval(tiempoTrancurrido);
-            alert("perdiste :( No adivinaste todas las imagenes");
-           location.reload()
+            alert("Perdiste :( No adivinaste todas las imágenes");
+            location.reload();
         }
     }, 1000);
 }
 
-/*let tiempoTrancurrido = setInterval(function(){
-    if(tiempo == 0){
-        clearInterval(tiempoTrancurrido);
-    }
-    console.log(tiempo--);
-}, 1000);*/
-
-
-//agregar imagenes al tablero
-function agregarImagenes(){
-    for(let x = 0; x < imagenes.length ; x++){
+//agregar imágenes al tablero
+function agregarImagenes() {
+    for (let x = 0; x < imagenes.length; x++) {
         let div = d.createElement("div");
         let img = d.createElement("img");
-        div.setAttribute("class","col-3");
-        img.setAttribute("src","imagenes/onepiece1.jpg");
-        img.setAttribute("class","img-fluid altoimg");
-        img.setAttribute("id",x);
+        div.setAttribute("class", "col-3");
+        img.setAttribute("src", "imagenes/onepiece1.jpg");
+        img.setAttribute("class", "img-fluid altoimg");
+        img.setAttribute("id", x);
         img.addEventListener("click", mostrarImagenes);
         div.appendChild(img);
         tablero.appendChild(div);
     }
 }
 
-//funcion para mostrar las imagenes
+//función para mostrar las imágenes
 function mostrarImagenes() {
     //guardar ID de la imagen
     let imgID = this.getAttribute("id");
@@ -139,45 +135,48 @@ function mostrarImagenes() {
     nombreImg.push(imagenes[imgID].nombre);
     posImg.push(imgID);
     //alert(nombreImg[0]+" "+posImg[0]);
-    //ejecutar la funcion comparar imagenes
+    //ejecutar la función comparar imágenes
     if (nombreImg.length == 2) {
-       setTimeout(comparaImg, 300);
+        setTimeout(comparaImg, 300);
     }
 }
 
-
-//funcion para comparar las imagenes
+//función para comparar las imágenes
 function comparaImg() {
     let todasImg = d.querySelectorAll(".tablero .col-3 img");
-    //comparar imagenes
+    //comparar imágenes
     if (nombreImg[0] == nombreImg[1]) {
         if (posImg[0] != posImg[1]) {
-            todasImg[ posImg[0] ].setAttribute("src","imagenes/ok.jpg");
-            todasImg[ posImg[1] ].setAttribute("src","imagenes/ok.jpg");
-            todasImg[ posImg[0] ].removeEventListener("click",mostrarImagenes);
-            todasImg[ posImg[1] ].removeEventListener("click",mostrarImagenes);
-            aciertos++
-            mostrarAciertos.textContent = aciertos
-        }else{
-            alert("debes escoger otra imagen");
-            todasImg[posImg[0]].setAttribute("src","imagenes/onepiece1.jpg")
-            intentos++
+            todasImg[posImg[0]].setAttribute("src", "imagenes/ok.jpg");
+            todasImg[posImg[1]].setAttribute("src", "imagenes/ok.jpg");
+            todasImg[posImg[0]].removeEventListener("click", mostrarImagenes);
+            todasImg[posImg[1]].removeEventListener("click", mostrarImagenes);
+            aciertos++;
+            mostrarAciertos.textContent = aciertos;
+            const nombreJugador = document.getElementById("nombreJugador").value;
+            guardarDatosEnLocalStorage(nombreJugador, tiempo, intentos);
+        } else {
+            alert("Debes escoger otra imagen");
+            todasImg[posImg[0]].setAttribute(
+                "src",
+                "imagenes/onepiece1.jpg"
+            );
+            intentos++;
             mostrarIntentos.textContent = intentos;
             soundLoser.play();
         }
-    
-    }else{
-        todasImg[ posImg[0] ].setAttribute("src","imagenes/onepiece1.jpg");
-        todasImg[ posImg[1] ].setAttribute("src","imagenes/onepiece1.jpg");
+    } else {
+        todasImg[posImg[0]].setAttribute("src", "imagenes/onepiece1.jpg");
+        todasImg[posImg[1]].setAttribute("src", "imagenes/onepiece1.jpg");
         intentos++;
         mostrarIntentos.textContent = intentos;
     }
-    nombreImg= [];
-    posImg= [];
+    nombreImg = [];
+    posImg = [];
 
-    //Logica pasar de niveles 
-    if(aciertos == 6 && nivel == 1){
-        alert("🌟felicidades pasaste al siguiente nivel🌟");
+    //Lógica para pasar de niveles
+    if (aciertos == 6 && nivel == 1) {
+        alert("🌟Felicidades, pasaste al siguiente nivel🌟");
         aciertos = 0;
         intentos = 0;
         clearInterval(tiempoTrancurrido);
@@ -189,8 +188,8 @@ function comparaImg() {
         mostrarTiempo.textContent = tiempo;
         quitarImagenes();
         juegoActivo = false;
-    }else if(aciertos == 6 && nivel == 2) {
-        alert("🌟felicidades pasaste al siguiente nivel🌟");
+    } else if (aciertos == 6 && nivel == 2) {
+        alert("🌟Felicidades, pasaste al siguiente nivel🌟");
         aciertos = 0;
         intentos = 0;
         clearInterval(tiempoTrancurrido);
@@ -202,8 +201,8 @@ function comparaImg() {
         mostrarTiempo.textContent = tiempo;
         quitarImagenes();
         juegoActivo = false;
-    }else if (aciertos == 6 && nivel == 3){
-        alert("🌟felicidades has superado todos los  nivel🌟");
+    } else if (aciertos == 6 && nivel == 3) {
+        alert("🌟Felicidades, has superado todos los niveles🌟");
         aciertos = 0;
         intentos = 0;
         clearInterval(tiempoTrancurrido);
@@ -218,13 +217,65 @@ function comparaImg() {
     }
 }
 
-//quitar imagenes del tablero
+//quitar imágenes del tablero
 function quitarImagenes() {
     let todasLasImg = d.querySelectorAll(".tablero div");
-    for(let i = 0; i < todasLasImg.length; i++){
+    for (let i = 0; i < todasLasImg.length; i++) {
         todasLasImg[i].remove();
     }
 }
+
+// función para guardar datos del jugador en el localStorage
+function guardarDatosEnLocalStorage(nombre, tiempo, intentos) {
+    // Obtener los datos existentes del localStorage
+    let datosGuardados = JSON.parse(localStorage.getItem("datosJugadores")) || [];
+
+    // Buscar si ya existe un registro para el jugador
+    const jugadorExistente = datosGuardados.find((jugador) => jugador.nombre === nombre);
+
+    if (jugadorExistente) {
+        // Si el jugador ya existe, actualizar sus datos
+        jugadorExistente.tiempo = tiempo;
+        jugadorExistente.intentos = intentos;
+    } else {
+        // Si el jugador no existe, agregar un nuevo registro
+        const jugador = {
+            nombre: nombre,
+            tiempo: tiempo,
+            intentos: intentos,
+        };
+        datosGuardados.push(jugador);
+    }
+
+    // Guardar la lista actualizada en el localStorage después de convertirla en una cadena JSON
+    localStorage.setItem("datosJugadores", JSON.stringify(datosGuardados));
+}
+
+d.addEventListener("DOMContentLoaded", function () {
+    mostrarTablaEstadisticas();
+});
+
+// función para mostrar la tabla de estadísticas desde el localStorage
+function mostrarTablaEstadisticas() {
+    const datosJugadores = JSON.parse(localStorage.getItem("datosJugadores")) || [];
+    const tablaEstadisticas = d.getElementById("tablaEstadisticas");
+    tablaEstadisticas.innerHTML = ""; // Limpiar la tabla
+
+    // Crear un objeto para mantener un registro de los jugadores únicos
+    const jugadoresUnicos = {};
+
+    // Filtrar y mostrar los datos únicos de los jugadores
+    datosJugadores.forEach((jugador, index) => {
+        if (!jugadoresUnicos[jugador.nombre]) {
+            jugadoresUnicos[jugador.nombre] = true;
+            const fila = d.createElement("tr");
+            fila.innerHTML = `<td>${index + 1}</td><td>${jugador.nombre}</td><td>${jugador.tiempo}</td><td>${jugador.intentos}</td>`;
+            tablaEstadisticas.appendChild(fila);
+        }
+    });
+}
+
+
 
 
 //que toca que hacer nosotros poner mas niveles, que le pida el usuario el nombre y que guarde en el puesto jugador tiempo juego intentos totales
